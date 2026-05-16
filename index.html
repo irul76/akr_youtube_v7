@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AKR Trend YouTube</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --red: #E81C1C;
+    --red-dim: #b50000;
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --surface2: #f0f1f5;
+    --border: #e2e4ec;
+    --text: #12151f;
+    --muted: #6b7280;
+    --accent: #E81C1C;
+    --positive: #16a34a;
+    --negative: #dc2626;
+    --card-hover: #f8f9fc;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.15;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,246,250,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: var(--red);
+    border-radius: 8px;
+    display: grid; place-items: center;
+  }
+  .logo-icon svg { width: 18px; height: 18px; fill: white; }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+  .logo-text span { color: var(--red); }
+
+  .header-badge {
+    font-size: 0.7rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 5rem 2rem 3.5rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(232,28,28,0.1) 0%, transparent 70%);
+    top: 0; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    position: relative;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--red);
+    display: block;
+  }
+  .hero p {
+    margin-top: 1.2rem;
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 300;
+    max-width: 520px;
+    margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; position: relative; z-index: 1; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(232,28,28,0.3); box-shadow: 0 4px 20px rgba(232,28,28,0.07); }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px; height: 14px;
+    background: var(--red);
+    border-radius: 2px;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  input[type="text"], input[type="password"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, select:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(232,28,28,0.12);
+  }
+  select option { background: #ffffff; color: #12151f; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .form-group { display: flex; flex-direction: column; }
+
+  .api-row { display: flex; gap: 0.7rem; align-items: flex-end; }
+  .api-row input { flex: 1; }
+
+  /* toggle show/hide */
+  .toggle-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0 0.9rem;
+    height: 40px;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+  .toggle-btn:hover { color: var(--text); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.72rem 1.8rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary {
+    background: var(--red);
+    color: white;
+  }
+  .btn-primary:hover { background: #e00; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,26,26,0.35); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { background: #444; color: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: #aaa; background: var(--surface2); }
+
+  /* ── CATEGORY CHIPS ── */
+  .chip-row {
+    display: flex; flex-wrap: wrap; gap: 0.6rem;
+  }
+  .chip {
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .chip:hover { border-color: var(--red); color: var(--text); }
+  .chip.active {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+  }
+
+  /* ── HOW TO GET API KEY ── */
+  .api-guide {
+    background: rgba(232,28,28,0.04);
+    border: 1px solid rgba(232,28,28,0.18);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-top: 1rem;
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .api-guide strong { color: var(--text); }
+  .api-guide a { color: var(--red); }
+  .api-guide-toggle {
+    background: none; border: none;
+    color: var(--red); font-size: 0.8rem;
+    cursor: pointer; margin-top: 0.6rem;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  /* ── SPINNER ── */
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ALERT ── */
+  .alert {
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+    display: flex; align-items: flex-start; gap: 0.7rem;
+    animation: fadeIn 0.3s ease;
+  }
+  .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+  .alert-success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
+  .alert-info { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── RESULTS SECTION ── */
+  #results { display: none; }
+  #results.visible { display: block; }
+
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .results-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+  }
+  .results-title span { color: var(--red); }
+  .results-meta { font-size: 0.8rem; color: var(--muted); }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    opacity: 0.6;
+  }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); line-height: 1.1; margin-top: 4px; }
+
+  /* ── VIDEO TABLE ── */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  thead th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+  }
+  thead th:hover { color: var(--text); }
+  thead th.sort-asc::after { content: ' ▲'; font-size: 0.6rem; }
+  thead th.sort-desc::after { content: ' ▼'; font-size: 0.6rem; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--card-hover); }
+
+  td { padding: 0.85rem 1rem; vertical-align: middle; }
+
+  .rank-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: var(--muted);
+    width: 32px;
+    text-align: center;
+  }
+  .rank-num.top3 { color: var(--red); }
+
+  .thumb-cell { width: 100px; }
+  .thumb-wrap {
+    position: relative;
+    width: 90px; height: 52px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #222;
+    flex-shrink: 0;
+  }
+  .thumb-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .thumb-play {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .thumb-wrap:hover .thumb-play { opacity: 1; }
+  .thumb-play svg { width: 20px; height: 20px; fill: white; }
+
+  .video-title-cell { min-width: 200px; max-width: 300px; }
+  .video-title {
+    font-weight: 600;
+    color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+    font-size: 0.88rem;
+  }
+  .channel-name {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .channel-name svg { width: 10px; height: 10px; fill: var(--muted); }
+
+  .num-cell {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--text);
+    font-size: 0.88rem;
+  }
+
+  .sentiment-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 110px;
+  }
+  .bar-track {
+    flex: 1;
+    height: 5px;
+    background: rgba(239,68,68,0.2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--positive);
+    border-radius: 999px;
+    transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .sentiment-pct {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--positive);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .date-cell { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+
+  /* ── SHORTS BADGE ── */
+  .shorts-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: var(--red);
+    color: white;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 5px;
+  }
+
+  /* ── SEARCH MODE TOGGLE ── */
+  .mode-toggle {
+    display: flex;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+    width: fit-content;
+    margin-bottom: 1rem;
+  }
+  .mode-btn {
+    padding: 0.55rem 1.4rem;
+    border-radius: 7px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.18s;
+    display: flex; align-items: center; gap: 7px;
+    letter-spacing: 0.02em;
+  }
+  .mode-btn.active {
+    background: var(--red);
+    color: white;
+    box-shadow: 0 2px 12px rgba(255,26,26,0.35);
+  }
+  .mode-btn:not(.active):hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* Portrait thumbnail for Shorts */
+  .thumb-wrap.portrait {
+    width: 36px;
+    height: 52px;
+    border-radius: 6px;
+  }
+  .thumb-wrap.portrait .thumb-play svg { width: 14px; height: 14px; }
+
+  .open-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .open-btn:hover { color: var(--text); border-color: #555; }
+
+  /* ── SENTIMENT MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    max-width: 560px; width: 100%;
+    max-height: 80vh; overflow-y: auto;
+    padding: 1.8rem;
+    animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 1.2rem;
+  }
+  .modal-title { font-weight: 700; font-size: 1rem; line-height: 1.4; max-width: 80%; }
+  .modal-close {
+    background: none; border: none;
+    color: var(--muted); font-size: 1.3rem;
+    cursor: pointer; line-height: 1;
+    padding: 0;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .sentiment-summary {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.8rem; margin-bottom: 1.2rem;
+  }
+  .sent-box {
+    border-radius: 10px; padding: 0.8rem 1rem;
+    text-align: center;
+  }
+  .sent-box.pos { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
+  .sent-box.neg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+  .sent-box-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+  }
+  .sent-box.pos .sent-box-num { color: var(--positive); }
+  .sent-box.neg .sent-box-num { color: var(--negative); }
+  .sent-box-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .comment-list { display: flex; flex-direction: column; gap: 0.7rem; }
+  .comment-item {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    border-left: 3px solid transparent;
+  }
+  .comment-item.pos { border-left-color: var(--positive); }
+  .comment-item.neg { border-left-color: var(--negative); }
+  .comment-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .comment-item.pos .comment-tag { color: var(--positive); }
+  .comment-item.neg .comment-tag { color: var(--negative); }
+  .comment-text { color: var(--muted); }
+
+  /* ── EMPTY / LOADING STATES ── */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+  .empty-state svg { width: 48px; height: 48px; fill: #333; margin-bottom: 1rem; }
+  .empty-state h3 { font-size: 1rem; color: #555; margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 0.85rem; }
+
+  .loading-state {
+    text-align: center; padding: 4rem 2rem;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    color: var(--muted);
+  }
+  .big-spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(255,26,26,0.2);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loading-steps {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 0.4rem;
+    text-align: left;
+    font-size: 0.82rem;
+  }
+  .loading-steps li { display: flex; align-items: center; gap: 8px; }
+  .step-icon { width: 16px; height: 16px; border-radius: 50%; background: #333; display: grid; place-items: center; flex-shrink: 0; }
+  .step-icon.done { background: rgba(34,197,94,0.2); color: var(--positive); font-size: 0.6rem; }
+  .step-icon.active { background: rgba(255,26,26,0.2); }
+  .step-spinner { width: 8px; height: 8px; border: 1px solid rgba(255,26,26,0.3); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 3rem;
+  }
+  footer a { color: var(--red); text-decoration: none; }
+
+  /* ── PROGRESS BAR (top of page) ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    height: 2px;
+    background: var(--red);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* ── PREMIUM GATE ── */
+  .premium-blur {
+    filter: blur(5px);
+    pointer-events: none;
+    user-select: none;
+    position: relative;
+  }
+  .premium-gate {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .premium-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(10,10,10,0.82);
+    backdrop-filter: blur(2px);
+    border-radius: 14px;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.8rem;
+    text-align: center;
+    padding: 2rem;
+  }
+  .premium-overlay.show { display: flex; }
+  .premium-overlay .lock-icon { font-size: 2rem; }
+  .premium-overlay h3 { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.05em; color:var(--text); }
+  .premium-overlay p { font-size:0.82rem; color:var(--muted); max-width:260px; line-height:1.6; }
+  .btn-premium {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 0.65rem 1.5rem;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+  }
+  .btn-premium:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,215,0,0.4); }
+
+  /* ── PREMIUM BANNER ── */
+  .premium-banner {
+    background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,165,0,0.05));
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .premium-banner-text { font-size: 0.85rem; color: var(--muted); }
+  .premium-banner-text strong { color: #FFD700; }
+  .premium-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #111;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .free-limit-bar {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .free-limit-track {
+    width: 120px; height: 5px;
+    background: var(--border);
+    border-radius: 999px; overflow: hidden;
+  }
+  .free-limit-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e, #FFD700, #ef4444);
+    border-radius: 999px;
+    transition: width 0.5s;
+  }
+
+  /* ── TABS (charts / wordcloud) ── */
+  .tab-row {
+    display: flex; gap: 0.5rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .tab-btn {
+    background: none; border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.6rem 1.1rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--red); }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── CHARTS ── */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  @media(max-width:700px){ .chart-grid { grid-template-columns: 1fr; } }
+  .chart-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+  .chart-box-title {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.8rem;
+  }
+  canvas.chart-canvas { width:100% !important; max-height:220px; }
+
+  /* ── WORDCLOUD ── */
+  #wordcloudCanvas {
+    width: 100%;
+    height: 280px;
+    display: block;
+  }
+  .wc-controls {
+    display: flex; gap: 0.6rem; flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+  }
+  .wc-btn {
+    padding: 4px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .wc-btn.active { background: var(--red); border-color: var(--red); color: white; }
+  .wc-btn:hover:not(.active) { color: var(--text); }
+
+  /* ── PDF MODAL ── */
+  #pdfModal .modal { max-width: 420px; }
+  .pdf-options { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem; }
+  .pdf-option {
+    display: flex; align-items: center; gap: 0.8rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .pdf-option:hover { border-color: var(--red); }
+  .pdf-option input[type=checkbox] { accent-color: var(--red); width:16px; height:16px; }
+  .pdf-option label { font-size:0.85rem; cursor:pointer; }
+  .pdf-option small { font-size:0.73rem; color:var(--muted); }
+
+  /* ── PREMIUM MODAL ── */
+  #premiumModal .modal { max-width:480px; text-align:center; }
+  .plan-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin:1.2rem 0; }
+  .plan-card {
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1.2rem 1rem;
+    cursor:pointer;
+    transition:all 0.15s;
+  }
+  .plan-card:hover { border-color:#555; }
+  .plan-card.featured { border-color: #FFD700; background: rgba(255,215,0,0.04); }
+  .plan-name { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:0.05em; }
+  .plan-price { font-size:1.4rem; font-weight:700; margin:4px 0; }
+  .plan-price small { font-size:0.75rem; font-weight:400; color:var(--muted); }
+  .plan-features { font-size:0.78rem; color:var(--muted); line-height:1.8; text-align:left; margin-top:8px; }
+  .plan-features li { list-style:none; display:flex; gap:5px; }
+  .plan-features li::before { content:'✓'; color:var(--positive); }
+  .plan-card.featured .plan-name { color:#FFD700; }
+
+  /* ── TRIAL NOTICE ── */
+  .trial-notice {
+    background: rgba(255,215,0,0.06);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+    color: #FFD700;
+    text-align: center;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .trial-notice.show { display: block; }
+
+    .hero h1 { font-size: 3rem; }
+    .thumb-cell { display: none; }
+    .date-cell { display: none; }
+    header { padding: 0 1rem; }
+    .main { padding: 0 1rem 3rem; }
+    .card { padding: 1.2rem; }
+  }
+
+  /* ── LIGHT MODE OVERRIDES ── */
+
+  /* Topbar / header shadow on light bg */
+  header {
+    box-shadow: 0 1px 12px rgba(0,0,0,0.08);
+  }
+
+  /* Card shadow on white */
+  .card {
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  }
+
+  /* Stat card value on light */
+  .stat-val, .stat-big, [class*="stat-n"] {
+    color: var(--text);
+  }
+
+  /* Table rows */
+  tr:nth-child(even) { background: #f8f9fc; }
+  th { background: #f0f1f5; color: var(--text); }
+  td { color: var(--text); border-color: var(--border); }
+
+  /* Spinner on light */
+  .spinner {
+    border-color: rgba(0,0,0,0.12);
+    border-top-color: var(--red);
+  }
+
+  /* Alert info */
+  .alert-info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+  .alert-error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+  .alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+
+  /* Result cards */
+  .result-card, .video-card, .channel-card {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  /* Muted text visible on light */
+  .muted, small, .text-muted { color: var(--muted); }
+
+  /* Code / pre blocks */
+  pre, code {
+    background: #f0f1f5;
+    color: #12151f;
+    border: 1px solid var(--border);
+  }
+
+  /* Hero section — subtle gradient */
+  .hero {
+    background: linear-gradient(160deg, #fff8f8 0%, #f5f6fa 100%);
+  }
+
+  /* Sidebar if exists */
+  .sidebar, nav {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  /* Input placeholder */
+  input::placeholder, textarea::placeholder {
+    color: #b0b5c0;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <a class="logo" href="#">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+    </div>
+    <span class="logo-text">AKR <span>TREND</span></span>
+  </a>
+  <span class="header-badge">YouTube Analyzer</span>
+  <div id="headerPremiumBadge" style="cursor:pointer" onclick="openPremiumModal()"></div>
+</header>
+
+<!-- TRIAL STATUS BAR -->
+<div id="trialStatusBar" style="display:none; background:rgba(255,215,0,0.07); border-bottom:1px solid rgba(255,215,0,0.15); padding:0.5rem 2rem; display:none; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; font-size:0.82rem;"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <h1>Discover What's<br><em>Trending Now</em></h1>
+  <p>Analyze the top 20 most popular YouTube videos by category. Powered by YouTube Data API v3 with sentiment analysis on comments.</p>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- API KEY CARD -->
+  <div class="card">
+    <div class="card-title">Step 1 — YouTube API Key</div>
+    <div class="api-row">
+      <div class="form-group" style="flex:1">
+        <label for="apiKey">Your YouTube Data API v3 Key</label>
+        <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off"/>
+      </div>
+      <button class="toggle-btn" onclick="toggleApiKey()">Show</button>
+    </div>
+    <button class="api-guide-toggle" onclick="toggleGuide()">▶ How to get a free API Key?</button>
+    <div class="api-guide" id="apiGuide" style="display:none">
+      <strong>Get your free YouTube API Key in 3 steps:</strong><br>
+      1. Go to <a href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a><br>
+      2. Create a project → Enable <strong>"YouTube Data API v3"</strong><br>
+      3. Go to <strong>Credentials → Create API Key</strong> → Copy and paste it above<br><br>
+      ⚠️ Free quota: <strong>10,000 units/day</strong>. Each search costs ~100 units. Keep your key private.
+    </div>
+  </div>
+
+  <!-- SEARCH MODE CARD -->
+  <div class="card">
+    <div class="card-title">Step 2 — Search Mode</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeVideo" onclick="setMode('video')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+        Regular Videos
+      </button>
+      <button class="mode-btn" id="modeShorts" onclick="setMode('shorts')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.23-2.53-5.06-1.56L6 6.94c-1.29.68-2.01 2.01-2 3.44.07 1.43.95 2.67 2.28 3.24l1.2.5L6 14.94c-1.84.96-2.53 3.23-1.56 5.06.97 1.83 3.23 2.53 5.06 1.56l8.5-4.5c1.29-.68 2.07-2.01 2-3.44-.07-1.43-.95-2.67-2.28-3.24z"/></svg>
+        Shorts
+      </button>
+    </div>
+    <div id="shortsInfo" style="display:none; background:rgba(255,26,26,0.07); border:1px solid rgba(255,26,26,0.2); border-radius:9px; padding:0.75rem 1rem; font-size:0.82rem; color:var(--muted); line-height:1.7;">
+      <strong style="color:var(--text)">Shorts Mode aktif</strong> — Mencari video berdurasi &le; 60 detik dengan tag <code style="color:var(--red)">#shorts</code>. Thumbnail akan tampil dalam format portrait vertikal.
+    </div>
+  </div>
+
+  <!-- SEARCH OPTIONS CARD -->
+  <div class="card">
+    <div class="card-title">Step 3 — Search Options</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="searchType">Search Type</label>
+        <select id="searchType">
+          <option value="global">🌍 Global (Worldwide)</option>
+          <option value="id">🇮🇩 Indonesia (Local)</option>
+          <option value="us">🇺🇸 United States</option>
+          <option value="gb">🇬🇧 United Kingdom</option>
+          <option value="jp">🇯🇵 Japan</option>
+          <option value="kr">🇰🇷 South Korea</option>
+          <option value="in">🇮🇳 India</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="maxResults">Max Results</label>
+        <select id="maxResults">
+          <option value="10">Top 10</option>
+          <option value="20" selected>Top 20</option>
+          <option value="30">Top 30</option>
+          <option value="50">Top 50</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sortBy">Sort By</label>
+        <select id="sortBy">
+          <option value="viewCount">View Count</option>
+          <option value="relevance">Relevance</option>
+          <option value="rating">Rating</option>
+          <option value="date">Upload Date</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY CARD -->
+  <div class="card">
+    <div class="card-title">Step 4 — Select Category</div>
+    <div class="chip-row" id="categoryChips">
+      <div class="chip active" data-cat="0" data-label="All Categories" onclick="selectCategory(this)">All</div>
+      <div class="chip" data-cat="20" data-label="Gaming" onclick="selectCategory(this)">🎮 Gaming</div>
+      <div class="chip" data-cat="24" data-label="Entertainment" onclick="selectCategory(this)">🎭 Entertainment</div>
+      <div class="chip" data-cat="10" data-label="Music" onclick="selectCategory(this)">🎵 Music</div>
+      <div class="chip" data-cat="25" data-label="News & Politics" onclick="selectCategory(this)">📰 News</div>
+      <div class="chip" data-cat="27" data-label="Education" onclick="selectCategory(this)">📚 Education</div>
+      <div class="chip" data-cat="17" data-label="Sports" onclick="selectCategory(this)">⚽ Sports</div>
+      <div class="chip" data-cat="28" data-label="Science & Tech" onclick="selectCategory(this)">🔬 Science & Tech</div>
+      <div class="chip" data-cat="22" data-label="People & Blogs" onclick="selectCategory(this)">👥 Blogs</div>
+      <div class="chip" data-cat="19" data-label="Travel & Events" onclick="selectCategory(this)">✈️ Travel</div>
+      <div class="chip" data-cat="26" data-label="How-to & Style" onclick="selectCategory(this)">💡 How-to</div>
+    </div>
+  </div>
+
+  <!-- ACTION -->
+  <div id="alertBox"></div>
+  <div style="display:flex; gap:0.8rem; flex-wrap:wrap; margin-bottom:1.5rem">
+    <button class="btn btn-primary" id="analyzeBtn" onclick="startAnalysis()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Analyze Trends
+    </button>
+    <button class="btn btn-ghost" onclick="resetAll()">Clear</button>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="loadingState" style="display:none">
+    <div class="loading-state">
+      <div class="big-spinner"></div>
+      <div style="font-weight:600;color:var(--text)">Fetching YouTube Data...</div>
+      <ul class="loading-steps" id="loadingSteps">
+        <li><span class="step-icon active"><span class="step-spinner"></span></span> Connecting to YouTube API</li>
+        <li><span class="step-icon" id="step2icon"></span> <span id="step2text" style="color:#444">Retrieving video data</span></li>
+        <li><span class="step-icon" id="step3icon"></span> <span id="step3text" style="color:#444">Fetching statistics</span></li>
+        <li><span class="step-icon" id="step4icon"></span> <span id="step4text" style="color:#444">Analyzing comments</span></li>
+        <li><span class="step-icon" id="step5icon"></span> <span id="step5text" style="color:#444">Running sentiment analysis</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+
+    <!-- SUMMARY STATS -->
+    <div class="results-header">
+      <div>
+        <div class="results-title">Top <span id="resultCategoryLabel">All</span> <span id="resultModeLabel"></span></div>
+        <div class="results-meta" id="resultsMeta"></div>
+      </div>
+      <button class="btn btn-ghost" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn btn-ghost" onclick="openPdfModal()">📄 PDF Report</button>
+    </div>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- TRIAL NOTICE -->
+    <div class="trial-notice" id="trialNotice">
+      ⚡ Mode Gratis: Menampilkan 10 video pertama dari <span id="totalFoundCount">0</span> hasil. <a href="#" onclick="openPremiumModal();return false;" style="color:#FFD700;font-weight:700;">Upgrade Premium</a> untuk unlock semua.
+    </div>
+
+    <!-- CHARTS + WORDCLOUD SECTION -->
+    <div class="card premium-gate" id="chartsSection">
+      <div class="premium-overlay" id="chartsOverlay">
+        <div class="lock-icon">🔒</div>
+        <h3>Premium Feature</h3>
+        <p>Grafik visualisasi & Word Cloud tersedia untuk pengguna Premium.</p>
+        <button class="btn-premium" onclick="openPremiumModal()">💎 Upgrade Premium</button>
+      </div>
+      <div id="chartsContent">
+        <div class="tab-row">
+          <button class="tab-btn active" onclick="switchTab('charts')">📊 Grafik</button>
+          <button class="tab-btn" onclick="switchTab('wordcloud')">☁️ Word Cloud</button>
+        </div>
+        <div class="tab-panel active" id="tabCharts">
+          <div class="chart-grid">
+            <div class="chart-box">
+              <div class="chart-box-title">Top 10 Videos by Views</div>
+              <canvas class="chart-canvas" id="chartViews"></canvas>
+            </div>
+            <div class="chart-box">
+              <div class="chart-box-title">Views vs Likes Correlation</div>
+              <canvas class="chart-canvas" id="chartLikes"></canvas>
+            </div>
+            <div class="chart-box">
+              <div class="chart-box-title">Sentiment Distribution</div>
+              <canvas class="chart-canvas" id="chartSentiment"></canvas>
+            </div>
+            <div class="chart-box">
+              <div class="chart-box-title">Upload Timeline (30 days)</div>
+              <canvas class="chart-canvas" id="chartTimeline"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tabWordcloud">
+          <div class="wc-controls">
+            <button class="wc-btn active" onclick="renderWordcloud('titles')">📝 Dari Judul</button>
+            <button class="wc-btn" onclick="renderWordcloud('comments')">💬 Dari Komentar</button>
+          </div>
+          <canvas id="wordcloudCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE (with premium gate for rows > 10) -->
+    <div class="table-wrap">
+      <table id="videoTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th class="thumb-cell">Thumbnail</th>
+            <th onclick="sortTable('title')">Title</th>
+            <th onclick="sortTable('views')" class="sort-desc">Views ▼</th>
+            <th onclick="sortTable('likes')">Likes</th>
+            <th onclick="sortTable('comments')">Comments</th>
+            <th onclick="sortTable('sentiment')">Sentiment</th>
+            <th onclick="sortTable('date')">Uploaded</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="videoBody"></tbody>
+      </table>
+    </div>
+    <!-- Premium gate row for table -->
+    <div id="premiumTableGate" style="display:none; text-align:center; padding:1.5rem; background:var(--surface); border:1px solid var(--border); border-top:none; border-radius:0 0 12px 12px;">
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.8rem">🔒 <strong style="color:var(--text)"><span id="hiddenCount">0</span> video</strong> tersembunyi. Upgrade untuk lihat semua hasil.</p>
+      <button class="btn-premium" onclick="openPremiumModal()">💎 Upgrade Premium — Mulai Rp 29.000/bln</button>
+    </div>
+
+    <div id="noResults" class="empty-state" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      <h3>No videos found</h3>
+      <p>Try a different category or search type.</p>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- SENTIMENT MODAL -->
+<div class="modal-overlay" id="sentModal" onclick="closeSentModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalVideoTitle"></div>
+      <button class="modal-close" onclick="closeSentModal()">✕</button>
+    </div>
+    <div class="sentiment-summary" id="modalSentSummary"></div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem;text-transform:uppercase;letter-spacing:0.05em">Sample Comments</div>
+    <div class="comment-list" id="modalComments"></div>
+  </div>
+</div>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premiumModal" onclick="if(event.target===this)closePremiumModal()">
+  <div class="modal" id="premiumModalContent">
+    <div class="modal-header">
+      <div class="modal-title">💎 Upgrade ke Premium</div>
+      <button class="modal-close" onclick="closePremiumModal()">✕</button>
+    </div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Buka semua fitur AKR Trend YouTube tanpa batas.</p>
+
+    <!-- Plan comparison -->
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-name" style="color:var(--muted)">Gratis</div>
+        <div class="plan-price">Rp 0 <small>/bln</small></div>
+        <ul class="plan-features">
+          <li>Maks 10 video</li>
+          <li>Export CSV</li>
+          <li style="opacity:0.35;text-decoration:line-through">Grafik & Charts</li>
+          <li style="opacity:0.35;text-decoration:line-through">Word Cloud</li>
+          <li style="opacity:0.35;text-decoration:line-through">Export PDF</li>
+        </ul>
+      </div>
+      <div class="plan-card featured">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="plan-name">Premium</div>
+          <span class="premium-badge">⭐ Best</span>
+        </div>
+        <div class="plan-price" style="color:#FFD700">Rp 29K <small>/bln</small></div>
+        <ul class="plan-features">
+          <li>Unlimited video</li>
+          <li>Export CSV</li>
+          <li>Grafik & Charts</li>
+          <li>Word Cloud</li>
+          <li>Export PDF Report</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Trial button (hanya kalau belum pernah trial) -->
+    <div id="trialSection" style="margin-bottom:0.8rem">
+      <button class="btn-premium" style="width:100%;justify-content:center;padding:0.85rem" onclick="activateTrial()">
+        🚀 Coba Premium Gratis 30 Hari
+      </button>
+      <p style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:0.5rem">Tidak perlu kartu kredit. Otomatis kembali ke Free setelah 30 hari.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:0.8rem;margin:0.8rem 0">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:0.75rem;color:var(--muted)">ATAU BELI SEKARANG</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+
+    <!-- WhatsApp order -->
+    <button onclick="openWhatsApp()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#25D366;color:white;border:none;border-radius:9px;padding:0.85rem;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.92rem;cursor:pointer;margin-bottom:0.7rem;transition:all 0.18s" onmouseover="this.style.background='#1ebe5d'" onmouseout="this.style.background='#25D366'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Order via WhatsApp — ${HARGA}/bulan
+    </button>
+
+    <!-- Kode Aktivasi -->
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:1rem;margin-top:0.2rem">
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.05em">🔑 Sudah punya kode aktivasi?</div>
+      <div style="display:flex;gap:0.5rem">
+        <input type="text" id="activationCodeInput" placeholder="Masukkan kode (contoh: AKR-VIP-001)"
+          style="flex:1;text-transform:uppercase;letter-spacing:0.05em"
+          oninput="document.getElementById('codeError').style.display='none';this.style.borderColor=''"
+          onkeydown="if(event.key==='Enter')activateCode()"/>
+        <button class="btn btn-primary" style="white-space:nowrap;padding:0 1.2rem" onclick="activateCode()">Aktifkan</button>
+      </div>
+      <div id="codeError" style="display:none;color:var(--negative);font-size:0.78rem;margin-top:0.5rem">
+        ❌ Kode tidak valid. Pastikan kode sudah benar atau hubungi admin via WhatsApp.
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:0.7rem" onclick="closePremiumModal()">Lanjut dengan Gratis</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (akses: ketik "akradmin" di konsol browser) -->
+<div class="modal-overlay" id="adminModal" onclick="if(event.target===this)document.getElementById('adminModal').classList.remove('open')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title">🔧 Admin Panel</div>
+      <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('open')">✕</button>
+    </div>
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem">Panel khusus admin untuk manage kode aktivasi.</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:1rem;margin-bottom:1rem">
+      <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.8rem">Kode Aktivasi Tersedia</div>
+      <div id="adminCodeList" style="font-family:monospace;font-size:0.82rem;line-height:2"></div>
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:1rem;margin-bottom:1rem">
+      <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.8rem">Generate Kode Baru</div>
+      <div style="display:flex;gap:0.5rem">
+        <input type="text" id="newCodeInput" placeholder="Contoh: AKR-VIP-006" style="flex:1;text-transform:uppercase"/>
+        <button class="btn btn-primary" onclick="addNewCode()" style="white-space:nowrap">+ Tambah</button>
+      </div>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem">⚠️ Kode baru hanya berlaku di browser ini. Untuk produksi, tambahkan ke array VALID_CODES di kode sumber.</p>
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:1rem">
+      <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.8rem">Status User Saat Ini</div>
+      <div id="adminUserStatus" style="font-size:0.85rem"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="pdfModal" onclick="if(event.target===this)closePdfModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📄 Export PDF Report</div>
+      <button class="modal-close" onclick="closePdfModal()">✕</button>
+    </div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:1rem">Pilih konten yang ingin disertakan dalam laporan:</p>
+    <div class="pdf-options">
+      <div class="pdf-option">
+        <input type="checkbox" id="pdfStats" checked>
+        <div><label for="pdfStats"><strong>📊 Statistik Utama</strong></label><br><small>Total views, likes, sentimen rata-rata</small></div>
+      </div>
+      <div class="pdf-option">
+        <input type="checkbox" id="pdfTable" checked>
+        <div><label for="pdfTable"><strong>📋 Tabel Video</strong></label><br><small>Daftar lengkap semua video dengan metrik</small></div>
+      </div>
+      <div class="pdf-option" id="pdfChartOption">
+        <input type="checkbox" id="pdfCharts">
+        <div><label for="pdfCharts"><strong>📈 Grafik</strong> <span class="premium-badge" style="font-size:0.6rem">Premium</span></label><br><small>Visualisasi views, likes, sentimen</small></div>
+      </div>
+      <div class="pdf-option" id="pdfWcOption">
+        <input type="checkbox" id="pdfWordcloud">
+        <div><label for="pdfWordcloud"><strong>☁️ Word Cloud</strong> <span class="premium-badge" style="font-size:0.6rem">Premium</span></label><br><small>Kata-kata paling populer dari judul</small></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.6rem">
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="generatePDF()">📄 Generate PDF</button>
+      <button class="btn btn-ghost" onclick="closePdfModal()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built for <strong>AKR Trend YouTube</strong> — YouTube Data API v3 · Sentiment Analysis · &copy; 2025<br>
+  <a href="https://console.cloud.google.com/" target="_blank">Get your API Key</a>
+</footer>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let selectedCategory = { cat: '0', label: 'All Categories' };
+let videoData = [];
+let sortCol = 'views';
+let sortDir = 'desc';
+let currentPage = 1;
+const PAGE_SIZE = 20;
+let searchMode = 'video'; // 'video' or 'shorts'
+
+// ─── UI HELPERS ──────────────────────────────────────────────────────────────
+function toggleApiKey() {
+  const el = document.getElementById('apiKey');
+  const btn = el.nextElementSibling;
+  if (el.type === 'password') { el.type = 'text'; btn.textContent = 'Hide'; }
+  else { el.type = 'password'; btn.textContent = 'Show'; }
+}
+
+function toggleGuide() {
+  const g = document.getElementById('apiGuide');
+  const btn = document.querySelector('.api-guide-toggle');
+  if (g.style.display === 'none') { g.style.display = 'block'; btn.textContent = '▼ How to get a free API Key?'; }
+  else { g.style.display = 'none'; btn.textContent = '▶ How to get a free API Key?'; }
+}
+
+function setMode(mode) {
+  searchMode = mode;
+  document.getElementById('modeVideo').classList.toggle('active', mode === 'video');
+  document.getElementById('modeShorts').classList.toggle('active', mode === 'shorts');
+  document.getElementById('shortsInfo').style.display = mode === 'shorts' ? 'block' : 'none';
+}
+
+function selectCategory(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedCategory = { cat: el.dataset.cat, label: el.dataset.label };
+}
+
+function showAlert(msg, type = 'error') {
+  document.getElementById('alertBox').innerHTML =
+    `<div class="alert alert-${type}"><span>${type==='error'?'⚠️':type==='success'?'✅':'ℹ️'}</span><span>${msg}</span></div>`;
+}
+function clearAlert() { document.getElementById('alertBox').innerHTML = ''; }
+
+function setProgress(pct) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function fmtNum(n) {
+  if (!n) return '—';
+  if (n >= 1_000_000_000) return (n/1_000_000_000).toFixed(1)+'B';
+  if (n >= 1_000_000) return (n/1_000_000).toFixed(1)+'M';
+  if (n >= 1_000) return (n/1_000).toFixed(1)+'K';
+  return n.toString();
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = Math.floor((now - d) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  if (diff < 7) return diff + 'd ago';
+  if (diff < 30) return Math.floor(diff/7) + 'w ago';
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function stepDone(id, textId, txt) {
+  document.getElementById(id).innerHTML = '✓';
+  document.getElementById(id).classList.add('done');
+  document.getElementById(textId).textContent = txt;
+  document.getElementById(textId).style.color = '';
+}
+function stepActive(id, textId) {
+  document.getElementById(id).innerHTML = '<span class="step-spinner"></span>';
+  document.getElementById(id).style.background = 'rgba(232,28,28,0.1)';
+  document.getElementById(textId).style.color = 'var(--text)';
+}
+
+// ─── MAIN ANALYSIS ────────────────────────────────────────────────────────────
+async function startAnalysis() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { showAlert('Please enter your YouTube API Key.'); return; }
+
+  clearAlert();
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('results').classList.remove('visible');
+  setProgress(5);
+
+  try {
+    // Step 1 → connect (just sets up)
+    await sleep(400);
+    setProgress(15);
+
+    // Step 2 → search videos
+    stepActive('step2icon','step2text');
+    const searchType = document.getElementById('searchType').value;
+    const maxRes = parseInt(document.getElementById('maxResults').value);
+    const sortBy = document.getElementById('sortBy').value;
+    const regionCode = searchType === 'global' ? null : searchType.toUpperCase();
+
+    const videos = await searchVideos(apiKey, selectedCategory.cat, regionCode, sortBy, maxRes);
+    stepDone('step2icon','step2text', `Found ${videos.length} videos`);
+    setProgress(35);
+
+    if (!videos.length) { showNoResults(); return; }
+
+    // Step 3 → stats
+    stepActive('step3icon','step3text');
+    const videoIds = videos.map(v => v.id?.videoId).filter(Boolean);
+    const stats = await fetchStats(apiKey, videoIds);
+    stepDone('step3icon','step3text', 'Statistics fetched');
+    setProgress(55);
+
+    // Step 4 → comments
+    stepActive('step4icon','step4text');
+    const allComments = {};
+    const commentBatch = videoIds.slice(0, Math.min(10, videoIds.length)); // limit API usage
+    for (const vid of commentBatch) {
+      try {
+        const cmts = await fetchComments(apiKey, vid, 20);
+        allComments[vid] = cmts;
+      } catch(e) { allComments[vid] = []; }
+      await sleep(50);
+    }
+    stepDone('step4icon','step4text', 'Comments fetched');
+    setProgress(75);
+
+    // Step 5 → sentiment
+    stepActive('step5icon','step5text');
+    await sleep(300);
+    const sentiments = {};
+    for (const [vid, cmts] of Object.entries(allComments)) {
+      sentiments[vid] = analyzeSentiment(cmts);
+    }
+    stepDone('step5icon','step5text', 'Sentiment analysis complete');
+    setProgress(95);
+
+    // Merge data
+    videoData = mergeData(videos, stats, sentiments, allComments);
+    setProgress(100);
+    await sleep(200);
+
+    renderResults();
+  } catch(err) {
+    let msg = err.message || 'Unknown error';
+    const lower = msg.toLowerCase();
+
+    if (lower.includes('failed to fetch') || lower.includes('networkerror') || lower.includes('load failed')) {
+      msg = '<strong>Gagal terhubung ke YouTube API.</strong><br><br>' +
+        '<b>Kemungkinan penyebab:</b><br>' +
+        '1. File dibuka langsung (file:///) &mdash; browser memblokir API call dari file lokal.<br>' +
+        '&nbsp;&nbsp;&nbsp;Gunakan local server: <code>python -m http.server 8080</code> lalu buka <code>http://localhost:8080</code><br><br>' +
+        '2. YouTube Data API v3 belum di-enable di <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" style="color:#ff8080">Google Cloud Console</a><br><br>' +
+        '3. API Key punya restriction domain &mdash; hapus atau tambahkan <code>localhost</code> di Credentials settings.';
+    } else if (lower.includes('keyinvalid') || lower.includes('api key') || lower.includes('bad request')) {
+      msg = 'API Key tidak valid. Pastikan key sudah benar dan tidak ada spasi.';
+    } else if (lower.includes('quota') || lower.includes('quotaexceeded') || lower.includes('ratelimitexceeded')) {
+      msg = 'Kuota API habis (10.000 unit/hari). Coba lagi besok atau gunakan API Key lain.';
+    } else if (lower.includes('403') || lower.includes('forbidden')) {
+      msg = 'Akses ditolak (403). Pastikan YouTube Data API v3 sudah di-enable di <a href="https://console.cloud.google.com" target="_blank" style="color:#ff8080">Google Cloud Console</a>.';
+    } else if (lower.includes('400')) {
+      msg = 'Request tidak valid (400). Cek kembali API Key dan pengaturan search.';
+    }
+
+    showAlert(msg);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Analyze Trends';
+    document.getElementById('loadingState').style.display = 'none';
+    setProgress(0);
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─── CATEGORY → KEYWORD MAP ───────────────────────────────────────────────────
+const CATEGORY_KEYWORDS = {
+  '0':  '',
+  '10': 'music',
+  '17': 'sports highlights',
+  '20': 'gaming',
+  '22': 'vlog',
+  '24': 'entertainment',
+  '25': 'news',
+  '26': 'tutorial how to',
+  '27': 'education learning',
+  '28': 'science technology',
+  '19': 'travel'
+};
+
+// ─── YOUTUBE API CALLS ────────────────────────────────────────────────────────
+async function searchVideos(apiKey, categoryId, regionCode, order, maxResults) {
+  const isShorts = searchMode === 'shorts';
+
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  const publishedAfter = oneMonthAgo.toISOString();
+
+  const keyword = CATEGORY_KEYWORDS[categoryId] || '';
+  // For Shorts: append #shorts keyword and use videoDuration=short
+  const searchKeyword = isShorts
+    ? (keyword ? keyword + ' #shorts' : '#shorts')
+    : keyword;
+
+  const params = new URLSearchParams({
+    part: 'snippet',
+    type: 'video',
+    order: order,
+    maxResults: Math.min(maxResults, 50),
+    publishedAfter: publishedAfter,
+    key: apiKey
+  });
+  if (searchKeyword) params.append('q', searchKeyword);
+  if (regionCode) params.append('regionCode', regionCode);
+  // Shorts are ≤ 60 seconds → use YouTube's 'short' duration filter
+  if (isShorts) params.append('videoDuration', 'short');
+
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || 'YouTube API error');
+
+  let items = (data.items || []).filter(i => i.id && i.id.videoId);
+
+  // If fewer than needed, try without date filter
+  if (items.length < 10 && maxResults > 10) {
+    const params2 = new URLSearchParams({
+      part: 'snippet', type: 'video', order: order,
+      maxResults: Math.min(maxResults, 50), key: apiKey
+    });
+    if (searchKeyword) params2.append('q', searchKeyword);
+    if (regionCode) params2.append('regionCode', regionCode);
+    if (isShorts) params2.append('videoDuration', 'short');
+    const res2 = await fetch(`https://www.googleapis.com/youtube/v3/search?${params2}`);
+    const data2 = await res2.json();
+    if (!data2.error) items = (data2.items || []).filter(i => i.id && i.id.videoId);
+  }
+
+  return items;
+}
+
+async function fetchStats(apiKey, videoIds) {
+  const chunks = chunkArray(videoIds, 50);
+  const allStats = {};
+  for (const chunk of chunks) {
+    const params = new URLSearchParams({
+      part: 'statistics,snippet,contentDetails',
+      id: chunk.join(','),
+      key: apiKey
+    });
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    for (const item of (data.items || [])) {
+      allStats[item.id] = {
+        views: parseInt(item.statistics?.viewCount || 0),
+        likes: parseInt(item.statistics?.likeCount || 0),
+        comments: parseInt(item.statistics?.commentCount || 0),
+        publishedAt: item.snippet?.publishedAt,
+        title: item.snippet?.title,
+        channel: item.snippet?.channelTitle,
+        thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url,
+        duration: item.contentDetails?.duration
+      };
+    }
+  }
+  return allStats;
+}
+
+async function fetchComments(apiKey, videoId, maxResults = 20) {
+  const params = new URLSearchParams({
+    part: 'snippet',
+    videoId: videoId,
+    maxResults: maxResults,
+    order: 'relevance',
+    key: apiKey
+  });
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/commentThreads?${params}`);
+  const data = await res.json();
+  if (data.error) return [];
+  return (data.items || []).map(i => i.snippet?.topLevelComment?.snippet?.textDisplay || '');
+}
+
+function chunkArray(arr, size) {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i+size));
+  return chunks;
+}
+
+// ─── SENTIMENT ANALYSIS ───────────────────────────────────────────────────────
+const POSITIVE_WORDS = ['love','great','awesome','amazing','excellent','good','fantastic','wonderful','beautiful','best','perfect','incredible','outstanding','brilliant','superb','fun','enjoy','enjoyed','like','liked','helpful','interesting','cool','nice','wow','impressive','happy','thank','thanks','congratulations','well done','fire','🔥','❤️','😍','😊','👏','👍','💯','🙌','😂','lol','hilarious'];
+const NEGATIVE_WORDS = ['hate','bad','terrible','awful','worst','boring','stupid','dumb','ugly','horrible','disappointing','waste','trash','garbage','sucks','annoying','useless','mediocre','poor','dull','dislike','lame','fake','lie','lying','scam','clickbait','misleading','😤','😠','👎','🤮','💩','cringe'];
+
+function analyzeSentiment(comments) {
+  let pos = 0, neg = 0;
+  const posComments = [], negComments = [];
+  for (const c of comments) {
+    const lower = c.toLowerCase();
+    let p = 0, n = 0;
+    for (const w of POSITIVE_WORDS) if (lower.includes(w)) p++;
+    for (const w of NEGATIVE_WORDS) if (lower.includes(w)) n++;
+    if (p > n) { pos++; posComments.push(c); }
+    else if (n > p) { neg++; negComments.push(c); }
+    else if (p === 0 && n === 0) { pos++; posComments.push(c); } // neutral → positive
+  }
+  const total = pos + neg || 1;
+  return { pos, neg, posPercent: Math.round((pos/total)*100), posComments, negComments };
+}
+
+// ─── DATA MERGE ───────────────────────────────────────────────────────────────
+function mergeData(searchItems, stats, sentiments, comments) {
+  const merged = [];
+  for (const item of searchItems) {
+    const id = item.id?.videoId || item.id;
+    if (!id) continue;
+    const s = stats[id] || {};
+    const sent = sentiments[id] || { pos:0, neg:0, posPercent:50, posComments:[], negComments:[] };
+    merged.push({
+      id,
+      title: s.title || item.snippet?.title || 'Unknown',
+      channel: s.channel || item.snippet?.channelTitle || 'Unknown',
+      thumbnail: s.thumbnail || item.snippet?.thumbnails?.medium?.url || '',
+      views: s.views || 0,
+      likes: s.likes || 0,
+      comments: s.comments || 0,
+      publishedAt: s.publishedAt || item.snippet?.publishedAt || '',
+      sentiment: sent,
+      rawComments: comments[id] || [],
+      fromPreviousMonth: false
+    });
+  }
+  // sort by views descending by default
+  merged.sort((a,b) => b.views - a.views);
+  return merged;
+}
+
+// ─── RENDER RESULTS ───────────────────────────────────────────────────────────
+function renderResults() {
+  if (!videoData.length) { showNoResults(); return; }
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('resultCategoryLabel').textContent = selectedCategory.label;
+  document.getElementById('resultModeLabel').textContent = searchMode === 'shorts' ? '⚡ Shorts' : 'Videos';
+
+  const region = document.getElementById('searchType').value;
+  const regionLabel = document.getElementById('searchType').options[document.getElementById('searchType').selectedIndex].text;
+  const modeLabel = searchMode === 'shorts' ? '⚡ Shorts' : 'Regular Videos';
+  document.getElementById('resultsMeta').textContent =
+    `${videoData.length} videos · ${regionLabel} · ${modeLabel} · Last 30 days`;
+
+  // Freemium notice
+  const overLimit = !isPremium && videoData.length > FREE_LIMIT;
+  document.getElementById('totalFoundCount').textContent = videoData.length;
+  document.getElementById('trialNotice').classList.toggle('show', overLimit);
+  document.getElementById('hiddenCount').textContent = videoData.length - FREE_LIMIT;
+  document.getElementById('premiumTableGate').style.display = overLimit ? 'block' : 'none';
+
+  // Charts unlock
+  document.getElementById('chartsOverlay').classList.toggle('show', !isPremium);
+
+  // Stats
+  const totalViews = videoData.reduce((a,v)=>a+v.views,0);
+  const totalLikes = videoData.reduce((a,v)=>a+v.likes,0);
+  const avgSent = videoData.length ? Math.round(videoData.reduce((a,v)=>a+(v.sentiment?.posPercent||0),0)/videoData.length) : 0;
+  const maxViews = videoData.length ? Math.max(...videoData.map(v=>v.views||0)) : 0;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Videos Found</div><div class="stat-value">${videoData.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Views</div><div class="stat-value">${fmtNum(totalViews)}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Likes</div><div class="stat-value">${fmtNum(totalLikes)}</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Positive Sentiment</div><div class="stat-value">${avgSent}%</div></div>
+    <div class="stat-card"><div class="stat-label">Most Viewed</div><div class="stat-value">${fmtNum(maxViews)}</div></div>
+  `;
+
+  renderTable();
+
+  // Render charts if premium
+  if (isPremium) {
+    setTimeout(() => renderCharts(), 100);
+  }
+}
+
+function renderTable() {
+  const sorted = [...videoData].sort((a,b) => {
+    let av, bv;
+    switch(sortCol) {
+      case 'views': av=a.views; bv=b.views; break;
+      case 'likes': av=a.likes; bv=b.likes; break;
+      case 'comments': av=a.comments; bv=b.comments; break;
+      case 'sentiment': av=a.sentiment.posPercent; bv=b.sentiment.posPercent; break;
+      case 'date': av=new Date(a.publishedAt); bv=new Date(b.publishedAt); break;
+      case 'title': av=(a.title||'').toLowerCase(); bv=(b.title||'').toLowerCase(); break;
+      default: av=a.views; bv=b.views;
+    }
+    if (av < bv) return sortDir==='asc'?-1:1;
+    if (av > bv) return sortDir==='asc'?1:-1;
+    return 0;
+  });
+
+  const body = document.getElementById('videoBody');
+  const isShorts = searchMode === 'shorts';
+  const displayData = isPremium ? sorted : sorted.slice(0, FREE_LIMIT);
+  body.innerHTML = displayData.map((v, i) => {
+    const rank = i+1;
+    const isTop3 = rank <= 3;
+    const sent = v.sentiment;
+    const thumbClass = isShorts ? 'thumb-wrap portrait' : 'thumb-wrap';
+    const shortsLink = isShorts
+      ? `https://youtube.com/shorts/${v.id}`
+      : `https://youtube.com/watch?v=${v.id}`;
+    const shortsBadge = isShorts ? `<span class="shorts-badge">⚡ SHORT</span>` : '';
+    return `
+      <tr>
+        <td><div class="rank-num ${isTop3?'top3':''}">${rank}</div></td>
+        <td class="thumb-cell">
+          <a href="${shortsLink}" target="_blank" rel="noopener">
+            <div class="${thumbClass}">
+              <img src="${v.thumbnail}" alt="" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2290%22 height=%2252%22><rect fill=%22%23222%22 width=%2290%22 height=%2252%22/></svg>'"/>
+              <div class="thumb-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            </div>
+          </a>
+        </td>
+        <td class="video-title-cell">
+          <div class="video-title">
+            <a href="${shortsLink}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${escHtml(v.title)}</a>${shortsBadge}
+          </div>
+          <div class="channel-name">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            ${escHtml(v.channel)}
+          </div>
+        </td>
+        <td class="num-cell">${fmtNum(v.views)}</td>
+        <td class="num-cell">${fmtNum(v.likes)}</td>
+        <td class="num-cell">${fmtNum(v.comments)}</td>
+        <td>
+          <div class="sentiment-bar">
+            <div class="bar-track"><div class="bar-fill" style="width:${sent.posPercent}%"></div></div>
+            <div class="sentiment-pct">${sent.posPercent}%</div>
+          </div>
+        </td>
+        <td class="date-cell">${fmtDate(v.publishedAt)}</td>
+        <td>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <a class="open-btn" href="${shortsLink}" target="_blank" rel="noopener">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+              ${isShorts ? 'Shorts' : 'Watch'}
+            </a>
+            ${v.rawComments.length ? `<button class="open-btn" onclick='openSentModal(${JSON.stringify(v.id)})'>💬 Sentiment</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortCol = col; sortDir = 'desc'; }
+  renderTable();
+}
+
+function showNoResults() {
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('videoBody').innerHTML = '';
+  document.getElementById('noResults').style.display = 'block';
+  document.getElementById('statsRow').innerHTML = '';
+  document.getElementById('loadingState').style.display = 'none';
+}
+
+function resetAll() {
+  videoData = [];
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('loadingState').style.display = 'none';
+  clearAlert();
+  setProgress(0);
+  document.getElementById('apiKey').value = '';
+}
+
+// ─── SENTIMENT MODAL ──────────────────────────────────────────────────────────
+function openSentModal(videoId) {
+  const v = videoData.find(x => x.id === videoId);
+  if (!v) return;
+  document.getElementById('modalVideoTitle').textContent = v.title;
+
+  const s = v.sentiment;
+  document.getElementById('modalSentSummary').innerHTML = `
+    <div class="sent-box pos">
+      <div class="sent-box-num">${s.posPercent}%</div>
+      <div class="sent-box-label">Positive (${s.pos} comments)</div>
+    </div>
+    <div class="sent-box neg">
+      <div class="sent-box-num">${100-s.posPercent}%</div>
+      <div class="sent-box-label">Negative (${s.neg} comments)</div>
+    </div>
+  `;
+
+  const posShow = s.posComments.slice(0,3);
+  const negShow = s.negComments.slice(0,3);
+  const commentHtml = [
+    ...posShow.map(c=>`<div class="comment-item pos"><div class="comment-tag">Positive</div><div class="comment-text">${escHtml(c.slice(0,200))}</div></div>`),
+    ...negShow.map(c=>`<div class="comment-item neg"><div class="comment-tag">Negative</div><div class="comment-text">${escHtml(c.slice(0,200))}</div></div>`)
+  ].join('') || '<div style="color:var(--muted);font-size:0.83rem">No comments analyzed (comments may be disabled)</div>';
+
+  document.getElementById('modalComments').innerHTML = commentHtml;
+  document.getElementById('sentModal').classList.add('open');
+}
+
+function closeSentModal(e) {
+  if (!e || e.target === document.getElementById('sentModal')) {
+    document.getElementById('sentModal').classList.remove('open');
+  }
+}
+
+// ─── EXPORT CSV ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!videoData.length) return;
+  const header = ['Rank','Title','Channel','Views','Likes','Comments','Positive Sentiment %','Published Date','URL'];
+  const rows = videoData.map((v,i) => [
+    i+1,
+    `"${(v.title||"").replace(/"/g,'""')}"`,
+    `"${(v.channel||"").replace(/"/g,'""')}"`,
+    v.views, v.likes, v.comments,
+    v.sentiment.posPercent,
+    v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : '',
+    `https://youtube.com/watch?v=${v.id}`
+  ]);
+  const csv = [header, ...rows].map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `akr-trend-${selectedCategory.label.toLowerCase().replace(/\s/g,'-')}-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ─── UTIL ─────────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── PREMIUM / FREEMIUM STATE ────────────────────────────────────────────────
+const FREE_LIMIT = 10;
+const TRIAL_DAYS = 30;
+const WA_NUMBER = '6281212253776';
+const HARGA = 'Rp 29.000';
+const SHEETS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSlUxCIBDgWVknx85iYa7yrU7KrAAMRbn31ykmfcCnel0b7aqd53lY1dYhnfTDRb6RPv713cCRD06A/pub?gid=0&single=true&output=csv';
+
+let isPremium = false;
+let sheetsData = []; // cache data dari Sheets
+
+// Fetch & parse CSV dari Google Sheets
+async function fetchSheetsData() {
+  try {
+    const res = await fetch(SHEETS_CSV + '&t=' + Date.now()); // cache-bust
+    const text = await res.text();
+    const lines = text.trim().split('\n').slice(1); // skip header
+    sheetsData = lines.map(line => {
+      try {
+        const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+        return {
+          kode:      (cols[0] || '').toUpperCase(),
+          status:    (cols[1] || '').toLowerCase(),
+          expire:    cols[2] || '',
+          nama_user: cols[3] || ''
+        };
+      } catch(e) { return null; }
+    }).filter(r => r && r.kode);
+    return sheetsData;
+  } catch(e) {
+    console.warn('Gagal fetch Sheets:', e);
+    return [];
+  }
+}
+
+// Validasi kode terhadap data Sheets
+function validateCodeFromSheets(code) {
+  const upper = code.toUpperCase().trim();
+  const row = sheetsData.find(r => r.kode === upper);
+  if (!row) return { valid: false, reason: 'not_found' };
+  if (row.status !== 'aktif') return { valid: false, reason: 'inactive' };
+  if (row.expire) {
+    const exp = new Date(row.expire);
+    if (!isNaN(exp) && exp < new Date()) return { valid: false, reason: 'expired' };
+  }
+  return { valid: true, row };
+}
+
+function initPremium() {
+  const stored = JSON.parse(localStorage.getItem('akr_premium') || '{}');
+
+  if (stored.type === 'code' && stored.code) {
+    // Re-validasi kode dari Sheets saat init (async, update UI setelah fetch)
+    fetchSheetsData().then(() => {
+      const result = validateCodeFromSheets(stored.code);
+      if (result.valid) {
+        isPremium = true;
+        updatePremiumUI('premium', 0, result.row?.nama_user);
+      } else {
+        // Kode sudah tidak aktif/expire di Sheets
+        localStorage.removeItem('akr_premium');
+        isPremium = false;
+        updatePremiumUI('expired_code');
+      }
+    });
+    // Sementara tampilkan premium dulu sambil fetch
+    isPremium = true;
+    updatePremiumUI('premium');
+    return;
+  }
+
+  if (stored.type === 'trial' && stored.startDate) {
+    const elapsed = (Date.now() - stored.startDate) / (1000 * 60 * 60 * 24);
+    if (elapsed < TRIAL_DAYS) {
+      isPremium = true;
+      const sisa = Math.ceil(TRIAL_DAYS - elapsed);
+      updatePremiumUI('trial', sisa);
+      return;
+    } else {
+      localStorage.removeItem('akr_premium');
+      isPremium = false;
+      updatePremiumUI('expired');
+      return;
+    }
+  }
+
+  isPremium = false;
+  updatePremiumUI('free');
+}
+
+function updatePremiumUI(status, sisaHari = 0, namaUser = '') {
+  const badge = document.getElementById('headerPremiumBadge');
+  const trialBar = document.getElementById('trialStatusBar');
+  if (!badge || !trialBar) return;
+
+  if (status === 'premium') {
+    badge.innerHTML = '<span class="premium-badge">💎 Premium</span>';
+    trialBar.style.display = 'none';
+  } else if (status === 'trial') {
+    badge.innerHTML = `<span class="premium-badge" style="background:linear-gradient(135deg,#22c55e,#16a34a)">✅ Trial Aktif</span>`;
+    trialBar.style.display = 'flex';
+    trialBar.innerHTML = `
+      <span style="font-size:0.78rem;color:var(--muted)">⏳ Trial berakhir dalam <strong style="color:#FFD700">${sisaHari} hari</strong></span>
+      <button class="btn-premium" style="padding:4px 14px;font-size:0.75rem" onclick="openPremiumModal()">Upgrade Sekarang</button>
+    `;
+  } else if (status === 'expired' || status === 'expired_code') {
+    badge.innerHTML = '<span style="font-size:0.72rem;color:var(--negative);font-weight:700">Trial Habis</span>';
+    trialBar.style.display = 'flex';
+    trialBar.innerHTML = `
+      <span style="font-size:0.78rem;color:var(--negative)">⚠️ ${status === 'expired_code' ? 'Langganan kamu sudah berakhir.' : 'Trial kamu sudah berakhir.'}</span>
+      <button class="btn-premium" style="padding:4px 14px;font-size:0.75rem" onclick="openPremiumModal()">Perpanjang ${HARGA}/bln</button>
+    `;
+    setTimeout(openPremiumModal, 1000);
+  } else {
+    badge.innerHTML = '<span style="font-size:0.72rem;color:var(--muted);cursor:pointer" onclick="openPremiumModal()">Free ▸ Upgrade</span>';
+    trialBar.style.display = 'none';
+  }
+}
+
+function activateTrial() {
+  const stored = JSON.parse(localStorage.getItem('akr_premium') || '{}');
+  if (stored.type === 'trial' || stored.type === 'code') return;
+  localStorage.setItem('akr_premium', JSON.stringify({ type: 'trial', startDate: Date.now() }));
+  isPremium = true;
+  closePremiumModal();
+  updatePremiumUI('trial', TRIAL_DAYS);
+  // Sembunyikan tombol trial agar tidak bisa dipakai lagi
+  const ts = document.getElementById('trialSection');
+  if (ts) ts.style.display = 'none';
+  showAlert('🎉 Trial 30 hari berhasil diaktifkan! Semua fitur premium terbuka.', 'success');
+  if (videoData.length) renderResults();
+}
+
+async function activateCode() {
+  const input = document.getElementById('activationCodeInput');
+  const code = (input?.value || '').trim().toUpperCase();
+  if (!code) { showAlert('Masukkan kode aktivasi terlebih dahulu.', 'error'); return; }
+
+  // Tampilkan loading
+  const btn = input.nextElementSibling;
+  const origText = btn.textContent;
+  btn.textContent = '⏳';
+  btn.disabled = true;
+
+  // Fetch data terbaru dari Sheets
+  await fetchSheetsData();
+  btn.textContent = origText;
+  btn.disabled = false;
+
+  const result = validateCodeFromSheets(code);
+
+  if (result.valid) {
+    localStorage.setItem('akr_premium', JSON.stringify({ type: 'code', code }));
+    isPremium = true;
+    closePremiumModal();
+    updatePremiumUI('premium');
+    showAlert(`✅ Kode valid! Akses Premium aktif${result.row?.expire ? ' hingga ' + result.row.expire : ''}. Terima kasih!`, 'success');
+    if (videoData.length) renderResults();
+  } else {
+    const errEl = document.getElementById('codeError');
+    const msgs = {
+      not_found: '❌ Kode tidak ditemukan. Pastikan kode sudah benar.',
+      inactive:  '❌ Kode sudah tidak aktif. Hubungi admin untuk perpanjang.',
+      expired:   '❌ Kode sudah kadaluarsa. Hubungi admin untuk perpanjang.'
+    };
+    errEl.textContent = msgs[result.reason] || '❌ Kode tidak valid.';
+    errEl.style.display = 'block';
+    input.style.borderColor = 'var(--negative)';
+  }
+}
+
+function openWhatsApp() {
+  const msg = encodeURIComponent(
+    `Halo! Saya ingin berlangganan AKR Trend YouTube Premium.\n\nPaket: Premium ${HARGA}/bulan\n\nMohon info cara pembayaran dan kode aktivasinya. Terima kasih! 🙏`
+  );
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panels = { charts: 'tabCharts', wordcloud: 'tabWordcloud' };
+  document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+  document.getElementById(panels[tab]).classList.add('active');
+  if (tab === 'wordcloud' && videoData.length) renderWordcloud('titles');
+}
+
+// ─── PREMIUM MODAL ────────────────────────────────────────────────────────────
+function openPremiumModal() {
+  document.getElementById('premiumModal').classList.add('open');
+}
+function closePremiumModal() {
+  document.getElementById('premiumModal').classList.remove('open');
+}
+
+// ─── PDF MODAL ────────────────────────────────────────────────────────────────
+function openPdfModal() {
+  if (!videoData.length) { showAlert('Jalankan analisis dulu sebelum export PDF.', 'info'); return; }
+  // lock premium options if not premium
+  const pdfCharts = document.getElementById('pdfCharts');
+  const pdfWc = document.getElementById('pdfWordcloud');
+  if (!isPremium) { pdfCharts.disabled = true; pdfWc.disabled = true; pdfCharts.checked = false; pdfWc.checked = false; }
+  else { pdfCharts.disabled = false; pdfWc.disabled = false; }
+  document.getElementById('pdfModal').classList.add('open');
+}
+function closePdfModal() {
+  document.getElementById('pdfModal').classList.remove('open');
+}
+
+// ─── CHARTS ──────────────────────────────────────────────────────────────────
+let chartInstances = {};
+
+function destroyCharts() {
+  Object.values(chartInstances).forEach(c => { try { c.destroy(); } catch(e){} });
+  chartInstances = {};
+}
+
+function renderCharts() {
+  destroyCharts();
+  const top10 = [...videoData].sort((a,b)=>b.views-a.views).slice(0,10);
+  const colors = ['#E81C1C','#ef4444','#f87171','#fca5a5','#dc2626','#b91c1c','#c9184a','#e63946','#ff4d6d','#ff6b6b'];
+
+  // Chart 1: Top 10 Views (horizontal bar)
+  const ctx1 = document.getElementById('chartViews').getContext('2d');
+  chartInstances.views = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: top10.map(v => (v.title||'').slice(0,20)+'…'),
+      datasets: [{ data: top10.map(v=>v.views), backgroundColor: colors, borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display:false } },
+      scales: {
+        x: { ticks: { color:'#6b7280', callback: v => fmtNum(v) }, grid: { color:'#e5e7eb' } },
+        y: { ticks: { color:'#374151', font:{size:10} }, grid: { display:false } }
+      },
+      maintainAspectRatio: false
+    }
+  });
+  document.getElementById('chartViews').style.height = '200px';
+
+  // Chart 2: Views vs Likes scatter
+  const ctx2 = document.getElementById('chartLikes').getContext('2d');
+  chartInstances.likes = new Chart(ctx2, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: videoData.map(v=>({x:v.views, y:v.likes})),
+        backgroundColor: 'rgba(232,28,28,0.65)',
+        pointRadius: 5
+      }]
+    },
+    options: {
+      plugins: { legend: { display:false } },
+      scales: {
+        x: { ticks: { color:'#6b7280', callback: v=>fmtNum(v) }, grid: { color:'#e5e7eb' }, title:{display:true,text:'Views',color:'#374151'} },
+        y: { ticks: { color:'#6b7280', callback: v=>fmtNum(v) }, grid: { color:'#e5e7eb' }, title:{display:true,text:'Likes',color:'#374151'} }
+      },
+      maintainAspectRatio: false
+    }
+  });
+  document.getElementById('chartLikes').style.height = '200px';
+
+  // Chart 3: Sentiment doughnut
+  const avgPos = videoData.length ? Math.round(videoData.reduce((a,v)=>a+(v.sentiment?.posPercent||0),0)/videoData.length) : 50;
+  const ctx3 = document.getElementById('chartSentiment').getContext('2d');
+  chartInstances.sent = new Chart(ctx3, {
+    type: 'doughnut',
+    data: {
+      labels: ['Positive','Negative'],
+      datasets: [{ data:[avgPos, 100-avgPos], backgroundColor:['#22c55e','#ef4444'], borderWidth:0 }]
+    },
+    options: {
+      plugins: {
+        legend: { labels:{ color:'#374151', font:{size:11} } },
+        tooltip: { callbacks: { label: ctx => ctx.label+': '+ctx.parsed+'%' } }
+      },
+      cutout: '65%',
+      maintainAspectRatio: false
+    }
+  });
+  document.getElementById('chartSentiment').style.height = '200px';
+
+  // Chart 4: Upload timeline (videos per day last 30 days)
+  const dayCounts = {};
+  videoData.forEach(v => {
+    if (!v.publishedAt) return;
+    const d = v.publishedAt.slice(0,10);
+    dayCounts[d] = (dayCounts[d]||0)+1;
+  });
+  const days = Object.keys(dayCounts).sort();
+  const ctx4 = document.getElementById('chartTimeline').getContext('2d');
+  chartInstances.timeline = new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: days.map(d=>d.slice(5)),
+      datasets: [{
+        data: days.map(d=>dayCounts[d]),
+        borderColor:'#FF1A1A', backgroundColor:'rgba(255,26,26,0.1)',
+        fill:true, tension:0.4, pointRadius:3, pointBackgroundColor:'#FF1A1A'
+      }]
+    },
+    options: {
+      plugins: { legend:{display:false} },
+      scales: {
+        x: { ticks:{color:'#666',font:{size:10}}, grid:{color:'#1f1f1f'} },
+        y: { ticks:{color:'#666',stepSize:1}, grid:{color:'#1f1f1f'} }
+      },
+      maintainAspectRatio: false
+    }
+  });
+  document.getElementById('chartTimeline').style.height = '200px';
+}
+
+// ─── WORD CLOUD ───────────────────────────────────────────────────────────────
+const WC_STOPWORDS = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','was','are','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','shall','can','i','you','he','she','it','we','they','my','your','his','her','its','our','their','this','that','these','those','not','no','so','as','if','then','than','when','how','what','who','which','where','why','just','like','more','all','also','up','about','out','get','got','one','two','new','–','|','&','-','yang','dan','di','ke','dari','untuk','dengan','ini','itu','ada','tidak','bisa','juga','saya','kamu','kami','mereka','ya','nya','nya','sudah','akan','lagi','video','channel','part','ep']);
+
+let wcSource = 'titles';
+
+function renderWordcloud(source) {
+  wcSource = source;
+  document.querySelectorAll('.wc-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const canvas = document.getElementById('wordcloudCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 600;
+  canvas.height = 280;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Gather words
+  let text = '';
+  if (source === 'titles') {
+    text = videoData.map(v => v.title||'').join(' ');
+  } else {
+    text = videoData.flatMap(v => v.rawComments).join(' ');
+  }
+
+  // Count freq
+  const freq = {};
+  text.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).forEach(w => {
+    if (w.length < 3 || WC_STOPWORDS.has(w) || /^\d+$/.test(w)) return;
+    freq[w] = (freq[w]||0)+1;
+  });
+
+  const words = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,60);
+  if (!words.length) { ctx.fillStyle='#444'; ctx.font='14px DM Sans'; ctx.fillText('Tidak ada data teks.', canvas.width/2-60, canvas.height/2); return; }
+
+  const maxFreq = words[0][1];
+  const minFreq = words[words.length-1][1];
+  const palette = ['#FF1A1A','#FF4444','#FF6666','#22c55e','#3b82f6','#a855f7','#f59e0b','#06b6d4','#ef4444','#84cc16'];
+
+  // Simple packed layout
+  const placed = [];
+  const W = canvas.width, H = canvas.height;
+
+  function overlap(x,y,w,h) {
+    for (const p of placed) {
+      if (x < p.x+p.w && x+w > p.x && y < p.y+p.h && y+h > p.y) return true;
+    }
+    return false;
+  }
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  for (const [word, count] of words) {
+    const t = (count - minFreq) / (maxFreq - minFreq + 1);
+    const size = Math.round(12 + t * 40);
+    ctx.font = `${t > 0.6 ? '700' : '400'} ${size}px DM Sans`;
+    const tw = ctx.measureText(word).width + 8;
+    const th = size + 6;
+    let placed_ok = false;
+
+    // Spiral search
+    for (let r = 0; r < 400; r += 2) {
+      const angle = r * 0.4;
+      const x = W/2 + r * Math.cos(angle) - tw/2;
+      const y = H/2 + r * Math.sin(angle) * 0.6 - th/2;
+      if (x < 0 || y < 0 || x+tw > W || y+th > H) continue;
+      if (!overlap(x, y, tw, th)) {
+        placed.push({x,y,w:tw,h:th});
+        ctx.fillStyle = palette[placed.length % palette.length];
+        ctx.globalAlpha = 0.6 + t * 0.4;
+        ctx.fillText(word, x + tw/2, y + th/2);
+        placed_ok = true;
+        break;
+      }
+    }
+    if (!placed_ok && placed.length > 50) break;
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ─── PDF EXPORT ───────────────────────────────────────────────────────────────
+function generatePDF() {
+  const inclStats  = document.getElementById('pdfStats').checked;
+  const inclTable  = document.getElementById('pdfTable').checked;
+  const inclCharts = document.getElementById('pdfCharts').checked && isPremium;
+  const inclWc     = document.getElementById('pdfWordcloud').checked && isPremium;
+
+  closePdfModal();
+
+  const date = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const modeLabel = searchMode === 'shorts' ? '⚡ Shorts' : 'Regular Videos';
+
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <title>AKR Trend Report</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#fff;color:#111;margin:0;padding:24px;font-size:12px}
+    h1{font-size:24px;margin:0 0 4px} h2{font-size:15px;margin:20px 0 8px;border-bottom:2px solid #FF1A1A;padding-bottom:4px}
+    .meta{color:#777;font-size:11px;margin-bottom:20px}
+    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    .stat{background:#f5f5f5;border-radius:8px;padding:10px 16px;min-width:100px}
+    .stat-label{font-size:10px;color:#888;text-transform:uppercase}
+    .stat-value{font-size:20px;font-weight:700;color:#FF1A1A}
+    table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11px}
+    th{background:#FF1A1A;color:white;padding:6px 8px;text-align:left;font-size:10px}
+    td{padding:5px 8px;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .badge{background:#FF1A1A;color:white;font-size:9px;padding:1px 5px;border-radius:4px}
+    img.chart-img{max-width:100%;border-radius:8px;margin-bottom:10px}
+    .footer{margin-top:30px;text-align:center;color:#aaa;font-size:10px;border-top:1px solid #eee;padding-top:12px}
+  </style></head><body>
+  <h1>📊 AKR Trend YouTube</h1>
+  <div class="meta">Laporan dibuat: ${date} · Kategori: ${selectedCategory.label} · Mode: ${modeLabel}</div>`;
+
+  if (inclStats) {
+    const totalViews = videoData.reduce((a,v)=>a+v.views,0);
+    const totalLikes = videoData.reduce((a,v)=>a+v.likes,0);
+    const avgSent = Math.round(videoData.reduce((a,v)=>a+v.sentiment.posPercent,0)/videoData.length);
+    const maxV = Math.max(...videoData.map(v=>v.views));
+    html += `<h2>📈 Statistik Utama</h2><div class="stats">
+      <div class="stat"><div class="stat-label">Videos</div><div class="stat-value">${videoData.length}</div></div>
+      <div class="stat"><div class="stat-label">Total Views</div><div class="stat-value">${fmtNum(totalViews)}</div></div>
+      <div class="stat"><div class="stat-label">Total Likes</div><div class="stat-value">${fmtNum(totalLikes)}</div></div>
+      <div class="stat"><div class="stat-label">Avg Sentimen</div><div class="stat-value">${avgSent}%</div></div>
+      <div class="stat"><div class="stat-label">Max Views</div><div class="stat-value">${fmtNum(maxV)}</div></div>
+    </div>`;
+  }
+
+  if (inclCharts) {
+    // capture chart canvases as images
+    const chartIds = ['chartViews','chartLikes','chartSentiment','chartTimeline'];
+    const chartLabels = ['Top 10 Videos by Views','Views vs Likes','Sentiment Distribution','Upload Timeline'];
+    html += `<h2>📊 Grafik Visualisasi</h2>`;
+    chartIds.forEach((id, i) => {
+      const canvas = document.getElementById(id);
+      if (canvas) {
+        try {
+          const img = canvas.toDataURL('image/png');
+          html += `<div style="margin-bottom:12px"><div style="font-size:10px;color:#888;margin-bottom:4px">${chartLabels[i]}</div><img class="chart-img" src="${img}"/></div>`;
+        } catch(e) {}
+      }
+    });
+  }
+
+  if (inclWc) {
+    const wcCanvas = document.getElementById('wordcloudCanvas');
+    if (wcCanvas) {
+      try {
+        html += `<h2>☁️ Word Cloud</h2><img class="chart-img" src="${wcCanvas.toDataURL('image/png')}"/>`;
+      } catch(e) {}
+    }
+  }
+
+  if (inclTable) {
+    const displayData = isPremium ? videoData : videoData.slice(0, FREE_LIMIT);
+    html += `<h2>📋 Daftar Video</h2><table><thead><tr>
+      <th>#</th><th>Judul</th><th>Channel</th><th>Views</th><th>Likes</th><th>Komentar</th><th>Sentimen</th><th>Upload</th>
+    </tr></thead><tbody>`;
+    displayData.forEach((v,i) => {
+      const isShorts = searchMode === 'shorts';
+      const link = isShorts ? `https://youtube.com/shorts/${v.id}` : `https://youtube.com/watch?v=${v.id}`;
+      html += `<tr>
+        <td>${i+1}</td>
+        <td><a href="${link}" style="color:#FF1A1A;text-decoration:none">${v.title.slice(0,60)}${v.title.length>60?'…':''}</a></td>
+        <td>${v.channel}</td>
+        <td>${fmtNum(v.views)}</td>
+        <td>${fmtNum(v.likes)}</td>
+        <td>${fmtNum(v.comments)}</td>
+        <td>${v.sentiment.posPercent}%</td>
+        <td>${fmtDate(v.publishedAt)}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    if (!isPremium && videoData.length > FREE_LIMIT) {
+      html += `<p style="color:#FF1A1A;font-size:11px">* ${videoData.length - FREE_LIMIT} video tersembunyi. Upgrade Premium untuk laporan lengkap.</p>`;
+    }
+  }
+
+  html += `<div class="footer">AKR Trend YouTube · Powered by YouTube Data API v3 · ${date}</div></body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const w = window.open(url, '_blank');
+  setTimeout(()=>{ if(w) w.print(); }, 800);
+}
+
+// ─── ADMIN PANEL ─────────────────────────────────────────────────────────────
+let runtimeCodes = [...VALID_CODES]; // runtime tambahan
+
+async function openAdminPanel() {
+  document.getElementById('adminModal').classList.add('open');
+  document.getElementById('adminCodeList').innerHTML = '<span style="color:var(--muted);font-size:0.82rem">⏳ Mengambil data dari Google Sheets...</span>';
+
+  await fetchSheetsData();
+
+  if (!sheetsData.length) {
+    document.getElementById('adminCodeList').innerHTML = '<span style="color:var(--negative);font-size:0.82rem">❌ Gagal fetch Sheets. Cek koneksi atau pastikan Sheets sudah di-publish.</span>';
+  } else {
+    document.getElementById('adminCodeList').innerHTML = `
+      <table style="width:100%;font-size:0.78rem;border-collapse:collapse">
+        <tr style="color:var(--muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em">
+          <td style="padding:4px 6px">Kode</td><td style="padding:4px 6px">Status</td><td style="padding:4px 6px">Expire</td><td style="padding:4px 6px">User</td><td></td>
+        </tr>
+        ${sheetsData.map(r => `
+          <tr style="border-top:1px solid var(--border)">
+            <td style="padding:5px 6px;font-family:monospace;color:var(--text)">${r.kode}</td>
+            <td style="padding:5px 6px"><span style="color:${r.status==='aktif'?'var(--positive)':'var(--negative)'}">${r.status}</span></td>
+            <td style="padding:5px 6px;color:var(--muted)">${r.expire||'-'}</td>
+            <td style="padding:5px 6px;color:var(--muted)">${r.nama_user||'-'}</td>
+            <td style="padding:5px 6px"><button onclick="copyCode('${r.kode}')" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:4px;padding:1px 8px;font-size:0.7rem;cursor:pointer">Copy</button></td>
+          </tr>`).join('')}
+      </table>
+    `;
+  }
+
+  const stored = JSON.parse(localStorage.getItem('akr_premium') || '{}');
+  const statusMap = {
+    trial: `✅ Trial aktif (mulai: ${stored.startDate ? new Date(stored.startDate).toLocaleDateString('id-ID') : '-'})`,
+    code:  `💎 Premium aktif (kode: ${stored.code})`,
+  };
+  document.getElementById('adminUserStatus').innerHTML = statusMap[stored.type] || '👤 Free user';
+}
+
+function addNewCode() {
+  window.open('https://docs.google.com/spreadsheets/d/1IGEhefINQNuUeeB1qBBp2KWp-pCmslp7hKeSOFqkCsI/edit', '_blank');
+  document.getElementById('adminModal').classList.remove('open');
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code).then(() => showAlert(`Kode "${code}" disalin!`, 'success'));
+}
+
+// Ketik "akradmin" di konsol untuk buka admin panel
+let adminBuffer = '';
+document.addEventListener('keydown', e => {
+  adminBuffer += e.key;
+  if (adminBuffer.endsWith('akradmin')) { openAdminPanel(); adminBuffer = ''; }
+  if (adminBuffer.length > 20) adminBuffer = adminBuffer.slice(-20);
+});
+
+// ─── KEYBOARD SHORTCUTS ───────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeSentModal(); closePremiumModal(); closePdfModal(); }
+  if ((e.key === 'Enter') && document.activeElement === document.getElementById('apiKey')) startAnalysis();
+});
+
+// Init on load
+window.addEventListener('DOMContentLoaded', () => {
+  initPremium();
+  // Sembunyikan tombol trial kalau sudah pernah trial/premium
+  const stored = JSON.parse(localStorage.getItem('akr_premium') || '{}');
+  if (stored.type === 'trial' || stored.type === 'code') {
+    const ts = document.getElementById('trialSection');
+    if (ts) ts.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
